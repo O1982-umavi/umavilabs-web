@@ -1,0 +1,1880 @@
+:root {
+  --bg: #080808;
+  --surface: rgba(255, 255, 255, 0.055);
+  --surface-strong: rgba(255, 255, 255, 0.09);
+  --text: #f0f0f0;
+  --text-secondary: #a8a8a8;
+  --accent: #a6ff4d;
+  --accent-2: #6b5cff;
+  --border: rgba(255, 255, 255, 0.07);
+  --shadow: 0 32px 90px rgba(0, 0, 0, 0.32);
+  --radius-xl: 34px;
+  --radius-lg: 26px;
+  --radius-md: 18px;
+  --max-width: 1260px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+
+  /* ─── Cognitive Load Curve ───
+     Global state, 1 = maximum mental noise, 0 = full resolution/calm.
+     Updated per-section by script.js as each section enters view.
+     Drives: visual density, contrast, animation speed, ambient noise opacity. */
+  --cognitive-load: 0.95;
+
+  /* ─── Meaning Density ───
+     NOT energy — perceived value/significance of the current section.
+     Ensures Reveal (1.0) always outweighs Demo (0.7) regardless of how
+     visually active the Demo is. Drives: heading scale, letter-spacing,
+     whitespace, and quietness of competing elements. */
+  --meaning-density: 0.4;
+
+  /* ─── Desire Curve ───
+     The primary KPI: how much desire the current section is generating.
+     Unlike cognitive-load (which should drop) and meaning-density (which
+     should peak at Reveal), desire must climb and then HOLD — it must never
+     drop at Waitlist. Drives: Living Memory Card opacity/glow intensity and
+     CTA emphasis. See Visual Storyboard v1 — Desire Curve addendum. */
+  --desire: 0.3;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Inter", sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
+  transition: background-color 1.2s var(--ease), background 1.8s var(--ease);
+  /* ─── Atmospheric Luminance Gradient Field ───
+     Not a horizon line, not an object, not a separator. A continuous
+     vertical light-density shift: the upper field reads colder/more
+     abstract, the lower field reads warmer/more material, with no
+     detectable boundary between them. Driven by --meaning-density, which
+     already climbs coherently with the storyboard (cold at Hero, warm by
+     Reveal), so this needs no variable of its own — it rides the existing
+     signal. Provides spatial anchoring (top = perception, bottom = ground)
+     without introducing UI, structure, or anything the eye can fix on. */
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(107, 92, 255, calc(0.1 - var(--meaning-density) * 0.06)), transparent 40%),
+    radial-gradient(ellipse at 80% 10%, rgba(166, 255, 77, 0.05), transparent 30%),
+    linear-gradient(
+      180deg,
+      #060608 0%,
+      #07070a calc(30% - var(--meaning-density) * 8%),
+      #0a0908 calc(62% + var(--meaning-density) * 6%),
+      #0d0a06 100%
+    );
+}
+
+/* Subtle grid overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  /* Cognitive Load Curve: ambient grid noise fades as mental load drops */
+  opacity: calc(var(--cognitive-load) * 0.09);
+  transition: opacity 1.2s var(--ease);
+  background:
+    linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 75%);
+}
+
+a { color: inherit; text-decoration: none; }
+button, input, select { font: inherit; }
+h1, h2, h3, p { margin: 0; }
+
+/* ─── Noise canvas ─── */
+.page-noise {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.3;
+  z-index: 0;
+}
+
+main, .site-header, .site-footer { position: relative; z-index: 1; }
+
+/* ─── Header ─── */
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  width: min(calc(100% - 2rem), var(--max-width));
+  margin: 1.1rem auto 0;
+  padding: 0.85rem 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-radius: 999px;
+  background: rgba(6, 6, 6, 0.72);
+  border: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: background 0.4s ease;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  font-size: 0.9rem;
+}
+
+.brand-mark {
+  height: 20px;
+  width: auto;
+  display: block;
+}
+
+.header-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.ghost-link {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  transition: color 0.25s ease;
+}
+.ghost-link:hover { color: var(--text); }
+
+/* ─── Buttons ─── */
+.button, .hero-scroll-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3.2rem;
+  padding: 0 1.3rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.38s var(--ease), box-shadow 0.38s var(--ease), background 0.3s ease;
+}
+
+.button-small { min-height: 2.65rem; padding: 0 0.95rem; font-size: 0.9rem; }
+
+.button-primary {
+  color: #061000;
+  background: linear-gradient(135deg, var(--accent) 0%, #c8ff7a 100%);
+  box-shadow: 0 16px 40px rgba(166,255,77,0.18);
+  font-weight: 700;
+}
+.button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 22px 50px rgba(166,255,77,0.28);
+}
+
+.hero-scroll-cta {
+  color: var(--text);
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+.hero-scroll-cta:hover {
+  transform: translateY(-2px);
+  background: rgba(255,255,255,0.1);
+}
+
+/* ─── Glass card ─── */
+.glass-card {
+  background: linear-gradient(160deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03));
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+}
+
+/* ─── Section base ─── */
+.section {
+  width: min(calc(100% - 2rem), var(--max-width));
+  margin: 0 auto;
+  padding: 9rem 0;
+  /* Cognitive load drives how "busy" ambient elements feel within a section */
+  --section-noise-opacity: calc(var(--cognitive-load) * 0.45);
+  --section-reveal-speed: calc(0.95s - (var(--cognitive-load) * 0.25s));
+}
+
+/* Sections carrying an .atmo-canvas need their own positioning context for
+   it — scoped here rather than on .section globally, since global overflow
+   would break Mirror's position:sticky panel. No overflow:hidden here: the
+   atmo-canvas itself now breaks out to full viewport width (Frame
+   Elimination Pass) and clips its own content internally, so the section
+   must not also clip it back down to the section's narrow content width. */
+.pain-section,
+.predictable-section,
+.demo-section,
+.consequence-section,
+.waitlist-section {
+  position: relative;
+}
+
+.section-kicker {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.48rem 0.88rem;
+  border-radius: 999px;
+  color: var(--text-secondary);
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.07);
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
+}
+
+/* ─── ACT WRAPPERS ───
+   Three-act structure (see Visual Storyboard v1 §1). No visual styling
+   needed beyond being a layout container — the acts exist for clarity of
+   structure and as a hook for future per-act ambient treatment. */
+.act { position: relative; }
+
+/* ═══════════════════════════════════════════════════════════════════
+   ATMOSPHERIC CANVAS SYSTEM
+   Updated architecture: 3 cinematic anchors (Hero, 03A, Reveal) + 5 ambient
+   canvases (Pain, Predictable, Demo, Consequence, Waitlist — Snapshot was
+   removed as a section entirely). These are not cinematic scenes and were
+   never meant to be — they get a lighter, reusable visual treatment instead
+   of either a full photographic scene or a flat black background.
+
+   Vocabulary note: these are deliberately not called "images" or "scenes."
+   They are atmospheric assets — a different ambition, and a reminder not to
+   slide back into the heavy 9-scene production machinery.
+
+   Structure per section (3-layer, identical shape everywhere):
+     Atmospheric Layer
+       ├── background ambient   (.atmo-canvas-bg)
+       ├── microvisual slot     (.atmo-canvas-slot) — future asset goes here
+       └── text layer           (untouched, existing section copy)
+
+   The microvisual slot is filled today with a subtle CSS-only texture from
+   one of 3 reusable families. Swapping in a real atmospheric asset later
+   means dropping an <img> into .atmo-canvas-slot — no landing rewrite.
+
+   Family A — Ingredients   → Pain
+   Family B — Repetition    → Predictable
+   Family C — Connection    → Demo, Consequence, Waitlist
+   ═══════════════════════════════════════════════════════════════════ */
+
+.atmo-canvas {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.atmo-canvas-bg {
+  position: absolute;
+  inset: 0;
+}
+
+.atmo-canvas-slot {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+}
+
+/* Real photo variant — when a slot holds an actual atmospheric asset instead
+   of the CSS-only placeholder texture. Full-bleed, no frame (same NO MORE
+   FRAMES standard as the cinematic anchors). The family's mood-gradient
+   (.atmo-canvas-bg) stays underneath/blended for color continuity rather
+   than being removed, so a real photo and a still-CSS-only neighbor section
+   read as the same visual world. */
+.atmo-canvas-slot-photo {
+  opacity: 1;
+  overflow: hidden;
+}
+
+.atmo-canvas-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Subject-safe full-bleed override — "Narrative" image rendering mode.
+   Pain's photo has a full human silhouette (head to feet) as its visual
+   anchor on the vertical axis, unlike Hero/Predictable's more ambient,
+   conceptual compositions, which tolerate cover-cropping safely. A plain
+   `cover` here risks clipping the head/feet on wide viewports. Keeping
+   `cover` (for global consistency, not switching to `contain`/letterboxing)
+   but anchoring the crop to center-top preserves the full figure. */
+.pain-section .atmo-canvas-img {
+  object-position: center top;
+}
+
+.atmo-canvas-slot-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Family A — Ingredients (Pain): floating organic fragments,
+   soft shadows, low opacity. Suggests scattered ingredients without
+   depicting any literal object. */
+.atmo-family-ingredients .atmo-canvas-bg {
+  background:
+    radial-gradient(ellipse 22rem 16rem at 18% 30%, rgba(196,170,130,0.1), transparent 60%),
+    radial-gradient(ellipse 18rem 14rem at 78% 70%, rgba(212,165,116,0.08), transparent 55%);
+}
+
+.atmo-family-ingredients .atmo-canvas-slot {
+  background-image:
+    radial-gradient(circle 3px at 22% 35%, rgba(230,200,150,0.22), transparent),
+    radial-gradient(circle 5px at 30% 42%, rgba(230,200,150,0.16), transparent),
+    radial-gradient(circle 2px at 70% 60%, rgba(230,200,150,0.2), transparent),
+    radial-gradient(circle 4px at 76% 68%, rgba(230,200,150,0.14), transparent),
+    radial-gradient(circle 3px at 60% 25%, rgba(230,200,150,0.18), transparent);
+  filter: blur(1px);
+}
+
+/* When a real photo fills the slot, the CSS particle texture above would
+   read as noise over the photograph — disable it and use a tonal vignette
+   on ::after instead, matching the family's warm-neutral identity. */
+.atmo-family-ingredients .atmo-canvas-slot-photo {
+  background-image: none;
+  filter: none;
+}
+
+.atmo-family-ingredients .atmo-canvas-slot-photo::after {
+  background: radial-gradient(ellipse at 50% 100%, rgba(20,16,10,0.32), transparent 60%);
+}
+
+/* Family B — Repetition (Predictable): repeating, iterative composition —
+   the same soft shape echoed at decreasing opacity, suggesting "always the
+   same pattern" without showing 3 literal plates. */
+.atmo-family-repetition .atmo-canvas-bg {
+  background: radial-gradient(ellipse 26rem 18rem at 50% 50%, rgba(196,170,130,0.07), transparent 65%);
+}
+
+.atmo-family-repetition .atmo-canvas-slot {
+  background-image:
+    repeating-linear-gradient(
+      100deg,
+      rgba(230,200,150,0.05) 0px,
+      rgba(230,200,150,0.05) 2px,
+      transparent 2px,
+      transparent 64px
+    );
+}
+
+.atmo-family-repetition .atmo-canvas-slot-photo {
+  background-image: none;
+}
+
+.atmo-family-repetition .atmo-canvas-slot-photo::after {
+  background: radial-gradient(ellipse at 50% 100%, rgba(18,15,10,0.34), transparent 60%);
+}
+
+/* Family C — Connection (Demo, Consequence, Waitlist): subtle constellations
+   — faint nodes and threads, suggesting relationships forming without any
+   literal UI graphic. */
+.atmo-family-connection .atmo-canvas-bg {
+  background:
+    radial-gradient(ellipse 24rem 20rem at 70% 25%, rgba(107,92,255,0.06), transparent 60%),
+    radial-gradient(ellipse 20rem 16rem at 25% 75%, rgba(166,255,77,0.04), transparent 55%);
+}
+
+.atmo-family-connection .atmo-canvas-slot {
+  background-image:
+    radial-gradient(circle 2px at 30% 30%, rgba(166,255,77,0.25), transparent),
+    radial-gradient(circle 2px at 55% 45%, rgba(166,255,77,0.2), transparent),
+    radial-gradient(circle 2px at 42% 65%, rgba(107,92,255,0.22), transparent),
+    radial-gradient(circle 2px at 68% 58%, rgba(107,92,255,0.18), transparent),
+    linear-gradient(115deg, transparent 49.7%, rgba(166,255,77,0.08) 50%, transparent 50.3%);
+}
+
+.atmo-family-connection .atmo-canvas-slot-photo {
+  background-image: none;
+}
+
+.atmo-family-connection .atmo-canvas-slot-photo::after {
+  background: radial-gradient(ellipse at 50% 100%, rgba(10,10,16,0.36), transparent 60%);
+}
+
+/* ─── CINEMATIC SLOT SYSTEM ───
+   A reserved frame for a future photograph. Until Scene 0X art lands, the
+   slot renders as a mood gradient matching that scene's Family + Environmental
+   Warmth Curve position (see Visual Storyboard v1 §2-4), so layout, rhythm
+   and Emotional Occupancy Ratio can be validated before any image exists.
+   NO MORE FRAMES rule: no visible border, no card-look — every image (and
+   every slot standing in for one) must bleed into the background. The
+   gradient overlay is the only structure; there is no separation between
+   "content," "background," and "image." */
+.scene-slot {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.scene-slot-mood {
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+}
+
+/* Image insertion into existing cinematic slots (HARD MODE integration —
+   layout untouched, photo fills the pre-existing container). */
+.scene-slot-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Mirror photo — premium state-change transition (opacity + slight scale,
+   600ms ease-out, never an instant swap) plus a very slow continuous
+   "living photography" zoom while a state is active. Scoped to this one
+   image only — other sections using .scene-slot-photo are unaffected. */
+#mirror-photo {
+  opacity: 1;
+  transform: scale(1);
+  object-position: 50% 38%;
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  animation: mirrorPhotoBreathe 14s ease-in-out infinite;
+}
+
+#mirror-photo.switching {
+  opacity: 0;
+  transform: scale(1.03);
+  animation-play-state: paused;
+}
+
+@keyframes mirrorPhotoBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* ─── Scene absorption layer ───
+   A slot holding a real photo must stop reading as a UI container and start
+   reading as a window into the world — same treatment standard as Hero's
+   full-bleed image. Three moves: (1) drop the rounded "card" radius so the
+   photo isn't framed like a component, (2) replace the mood-gradient
+   multiply-blend with a soft radial ambient mask (HERO-equivalent vignette,
+   not a color filter sitting on top), (3) suppress the generic placeholder
+   film-grain, which was designed for empty mood-gradients, not real photos. */
+.scene-slot:has(.scene-slot-photo) {
+  border-radius: 0;
+}
+
+.scene-slot:has(.scene-slot-photo) .scene-slot-mood {
+  display: none;
+}
+
+.scene-slot:has(.scene-slot-photo)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.15), rgba(0,0,0,0.45));
+  opacity: 1;
+  background-image: none;
+  mix-blend-mode: normal;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Subtle film-grain so empty mood-gradients don't look like flat color swatches
+   (slots without a real photo only — see absorption-layer override above) */
+.scene-slot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.06;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.4) 0, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.3) 0, transparent 1px),
+    radial-gradient(circle at 45% 80%, rgba(255,255,255,0.3) 0, transparent 1px);
+  background-size: 3px 3px;
+  mix-blend-mode: overlay;
+}
+
+.scene-slot-label {
+  position: absolute;
+  left: 1rem;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 2;
+  font-size: 0.7rem;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  color: rgba(255,255,255,0.4);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.6);
+}
+
+.scene-slot-label-standalone {
+  position: static;
+  display: inline-block;
+  margin-top: 1.6rem;
+  color: var(--text-secondary);
+  opacity: 0.55;
+  text-shadow: none;
+}
+
+/* Family 1 — Mental Load: Pain's previous scene-slot mood gradient is
+   superseded by .atmo-family-ingredients — Pain no longer uses the
+   scene-slot system at all (single-column, full-bleed redesign). */
+
+.scene-slot-mirror .scene-slot-mood {
+  background:
+    linear-gradient(150deg, rgba(150,150,140,0.28), rgba(35,32,28,0.5) 60%),
+    radial-gradient(circle at 70% 25%, rgba(200,180,140,0.16), transparent 55%);
+}
+
+/* Family 2 — Self Recognition: Predictable's previous scene-slot mood
+   gradient is superseded by .atmo-family-repetition — Predictable no
+   longer uses the scene-slot system at all (heroic statement redesign). */
+
+/* Family 3 — System Activation: superseded by .atmo-family-connection
+   (Atmospheric Canvas System) now that Demo no longer uses scene-slot. */
+
+/* Family 4 — Resolution (Consequence, Waitlist). Reveal no longer uses the
+   scene-slot system — it is the override architecture (.reveal-override-*)
+   defined in its own dedicated block. */
+/* Consequence no longer uses the scene-slot/mood-gradient system at all —
+   it's now independent recipe cards (.consequence-card), see below. */
+
+.scene-slot-waitlist .scene-slot-mood {
+  background:
+    linear-gradient(150deg, rgba(240,237,230,0.16), rgba(40,36,30,0.32) 70%),
+    radial-gradient(circle at 50% 40%, rgba(240,237,230,0.14), transparent 60%);
+}
+
+/* ─── LIVING MEMORY CARD ───
+   Single persistent signature system (replaces the Memory Orb entirely —
+   no dual system). One state line + one insight line, nothing decorative.
+   The brain understands sentences, not decorative systems. Fixed to the
+   viewport; content and opacity driven by data-card-state/data-card-insight
+   on whichever section is in view, read via the same IntersectionObserver
+   already wired for --cognitive-load / --meaning-density / --desire. */
+.memory-card {
+  position: fixed;
+  bottom: clamp(1.2rem, 3vw, 2rem);
+  right: clamp(1.2rem, 3vw, 2rem);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  max-width: 220px;
+  padding: 0.85rem 1.05rem;
+  border-radius: 14px;
+  background: rgba(10,10,10,0.55);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.08);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+  pointer-events: none;
+}
+
+.memory-card.visible {
+  opacity: calc(0.5 + var(--meaning-density) * 0.25 + var(--desire) * 0.25);
+  transform: translateY(0);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3), 0 0 calc(var(--desire) * 14px) rgba(166,255,77, calc(var(--desire) * 0.18));
+}
+
+.memory-card-state {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.memory-card-insight {
+  font-size: 0.86rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+@media (max-width: 720px) {
+  .memory-card { display: none; }
+}
+
+/* ─── HERO ─── */
+.hero-fullscreen {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  transform: scale(1.04);
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* Cinematic gradient — heavier on left for text legibility, lighter on right to show image */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(105deg, rgba(5,5,5,0.92) 0%, rgba(5,5,5,0.72) 30%, rgba(5,5,5,0.28) 60%, rgba(5,5,5,0.08) 100%),
+    linear-gradient(180deg, rgba(5,5,5,0.1) 0%, rgba(5,5,5,0.0) 40%, rgba(5,5,5,0.55) 85%, rgba(5,5,5,0.9) 100%);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  width: min(calc(100% - 2rem), var(--max-width));
+  margin: 0 auto;
+  padding: 10rem 0 7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.hero-eyebrow {
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 1.1rem;
+}
+
+.hero-content h1 {
+  max-width: 9ch;
+  font-size: clamp(3.8rem, 8vw, 7.2rem);
+  font-weight: 800;
+  letter-spacing: -0.065em;
+  line-height: 0.92;
+  color: var(--text);
+  margin-bottom: 2.2rem;
+}
+
+.hero-scroll-cta {
+  margin-top: 0;
+}
+
+/* Early Access Entry Point — functional, low-commitment. Small, quiet,
+   placed below the emotional CTA so it never competes with the Hero
+   headline/visual. Distinct in weight and tone from Waitlist's immersive,
+   high-intent final conversion form. */
+.hero-early-access {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.8rem;
+  max-width: 30rem;
+}
+
+.hero-early-access input,
+.hero-early-access select {
+  flex: 1 1 9rem;
+  min-height: 2.7rem;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: var(--text);
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.hero-early-access select option { background: #111; }
+
+.hero-early-access input:focus,
+.hero-early-access select:focus {
+  border-color: rgba(166,255,77,0.4);
+}
+
+.hero-early-access .button {
+  flex: 0 0 auto;
+  min-height: 2.7rem;
+  font-size: 0.85rem;
+  padding: 0 1.1rem;
+}
+
+.hero-early-access-microcopy {
+  margin-top: 0.7rem;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.6);
+  max-width: 28rem;
+}
+
+/* Scroll indicator */
+.hero-scroll-indicator {
+  position: absolute;
+  bottom: 2.5rem;
+  right: min(2rem, calc((100% - var(--max-width)) / 2 + 2rem));
+  width: 1px;
+  height: 72px;
+  background: rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+.hero-scroll-indicator span {
+  display: block;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(180deg, transparent, var(--accent));
+  animation: scrollSlide 2.2s var(--ease) infinite;
+}
+
+@keyframes scrollSlide {
+  0% { transform: translateY(-100%); opacity: 0; }
+  30% { opacity: 1; }
+  100% { transform: translateY(300%); opacity: 0; }
+}
+
+/* ─── Hero reveal animations ─── */
+.reveal-hero {
+  opacity: 0;
+  transform: translateY(32px);
+  animation: heroIn 1s var(--ease) forwards;
+}
+.reveal-hero.delay-1 { animation-delay: 0.18s; }
+.reveal-hero.delay-2 { animation-delay: 0.34s; }
+
+@keyframes heroIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── YOU ARE HERE ─── */
+.you-are-here-section { padding: 10rem 0; }
+
+.yah-wrap { max-width: 62rem; }
+
+.yah-lines {
+  display: grid;
+  gap: 1.2rem;
+  margin-top: 2rem;
+}
+
+.yah-line {
+  font-size: clamp(2rem, 4.5vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.055em;
+}
+
+.yah-line-secondary {
+  color: var(--text-secondary);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+}
+
+/* ─── PAIN (Scene 02 · EOR 50% · Family 1: Mental Load) ───
+   Single-column, left-aligned storytelling over the full-bleed atmo-canvas
+   background — same pattern as Hero/Predictable post-frame-elimination.
+   The legacy scene-slot-pain (a CSS mood-gradient frame competing with the
+   real atmo-canvas photo above it) has been removed entirely: it carried
+   no real asset, only a second decorative visual language duplicating what
+   the full-bleed background already did. */
+.pain-layout {
+  position: relative;
+  z-index: 1;
+}
+
+.pain-copy { max-width: 28rem; }
+
+.pain-copy h2 {
+  margin-top: 0.9rem;
+  font-size: clamp(2.1rem, 4.2vw, 3.4rem);
+  line-height: 1.06;
+  letter-spacing: -0.05em;
+}
+
+.pain-copy p {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* ─── MIRROR — STATE PERCEPTION (embodied state display) ───
+   The image is the carrier of meaning; text is minimal metadata (day +
+   mode + one short caption), never a competing explanation panel. This
+   intentionally differs from the Core Context Model, which already
+   carries the system's explanatory load — Mirror shows the felt state,
+   it doesn't explain it. */
+.mirror-header {
+  margin-bottom: 3.5rem;
+}
+
+.mirror-subline {
+  margin-top: 0.7rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+.mirror-layout-perception {
+  display: block;
+}
+
+.mirror-sticky-panel {
+  position: sticky;
+  top: 7rem;
+}
+
+/* Image stage — dominant but not full-hero: reduced from 4/5 to 16/10 so
+   the photo reads as "the protagonist" without converting the section
+   into a hero block. No card padding, no glass panel: the photo fills
+   the frame, edge to edge. */
+.mirror-image-stage {
+  position: relative;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+}
+
+.scene-slot-mirror {
+  position: relative;
+  aspect-ratio: 16 / 8.8;
+  width: 100%;
+}
+
+/* Editorial caption overlay — day + mode + one short line, bottom-left,
+   directly on the image. No background panel, no card-look; a soft
+   gradient underneath only for legibility. */
+.mirror-overlay {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 2.1rem 2rem 1.8rem;
+  background: linear-gradient(180deg, transparent 0%, rgba(8,8,8,0.8) 100%);
+}
+
+.mirror-overlay-day {
+  display: block;
+  color: var(--accent);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.mirror-overlay-mode {
+  margin-top: 0.5rem;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+
+.mirror-overlay-caption {
+  margin-top: 0.5rem;
+  max-width: 26rem;
+  color: rgba(255,255,255,0.78);
+  line-height: 1.5;
+  font-size: 0.95rem;
+}
+
+/* Thumbnail strip — the 3 non-active states, real (small) images, not
+   dots. ~30% of the visual budget relative to the hero, giving "I can see
+   all 4 states exist" without paying full-size-image cost for the
+   inactive 3. Regenerated on every state change. */
+.mirror-thumbs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-top: 1.3rem;
+}
+
+.mirror-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  opacity: 0.75;
+  transition: opacity 0.35s var(--ease), transform 0.35s var(--ease);
+}
+
+.mirror-thumb:hover {
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+.mirror-thumb-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mirror-thumb-day {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 0.5rem;
+  z-index: 2;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: rgba(255,255,255,0.92);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+}
+
+.mirror-thumb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 55%, rgba(8,8,8,0.6) 100%);
+}
+
+/* Mode-differentiated tint — a subtle color identity per emotional tone,
+   layered on top of the shared dark gradient above (::after), not
+   replacing it. Kept very low-opacity so it reads as mood, not a color
+   filter. */
+.mirror-thumb[data-tone="exhausted"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(120,140,165,0.12), transparent 60%);
+}
+
+.mirror-thumb[data-tone="leftovers"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(196,170,130,0.1), transparent 60%);
+}
+
+.mirror-thumb[data-tone="social"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(224,170,90,0.14), transparent 60%);
+}
+
+.mirror-thumb[data-tone="exploration"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, rgba(166,255,77,0.1), transparent 60%);
+}
+
+.mirror-thumb-mood {
+  position: absolute;
+  left: 0.6rem;
+  bottom: 1.6rem;
+  z-index: 2;
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.6);
+  text-shadow: 0 1px 6px rgba(0,0,0,0.7);
+}
+
+/* Progress hint — quiet, factual, not gamified. Sits right below the
+   thumbnail strip. */
+.mirror-progress-hint {
+  margin-top: 0.8rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  opacity: 0.75;
+  text-align: center;
+}
+
+/* Scroll markers — invisible, carry zero visible content. Their only job
+   is to give the existing scroll-driven IntersectionObserver something
+   to observe (exact same mechanism as before — no timers), at a total
+   height that lets the sticky panel actually pin while scrolling past. */
+.mirror-scroll-track {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 60vh;
+  height: 0;
+  pointer-events: none;
+}
+
+.mirror-scroll-marker {
+  height: 1px;
+}
+
+/* ─── PREDICTABLE (Scene 04 · EOR 65% · Family 2: Self Recognition) ───
+   Heroic statement section — UMAVI's core conceptual claim, not a
+   decorative explanation. Text-led: statement ~80% of focus, photo lives
+   only as minimal background ambiance (no competing scene-slot container,
+   no split layout). */
+.predictable-section { padding: 9rem 0; }
+
+.predictable-wrap {
+  max-width: 38rem;
+  position: relative;
+  z-index: 1;
+}
+
+.predictable-statement {
+  margin-top: 1rem;
+  font-size: clamp(2.6rem, 5.6vw, 4.4rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+  color: var(--text);
+}
+
+.predictable-substatement {
+  margin-top: 1.2rem;
+  max-width: 30rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.predictable-microbullets {
+  list-style: none;
+  margin: 1.8rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.predictable-microbullets li {
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.55);
+  padding-left: 1rem;
+  border-left: 1px solid rgba(255,255,255,0.15);
+}
+
+/* The atmo-canvas photo for this section is intentionally subdued — it
+   supports the statement, it never competes with it. */
+.predictable-heroic .atmo-canvas {
+  opacity: 0.4;
+}
+
+/* ─── DEMO ─── */
+.demo-heading {
+  max-width: 54rem;
+  margin-bottom: 2.5rem;
+}
+
+.demo-heading h2 {
+  margin-top: 0.9rem;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1.03;
+  letter-spacing: -0.055em;
+}
+
+.demo-heading p {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+/* "What it actually does" — static 3-column composition, everything
+   visible simultaneously. No sphere, no nodes, no autoplay, no hidden
+   states — replaces the previous animated cognition-states demo entirely.
+   PANTRY → UMAVI UNDERSTANDING → RECIPE SUGGESTIONS, editorial food
+   intelligence, not a tech demo. */
+.pud-flow {
+  display: grid;
+  grid-template-columns: 0.85fr auto 1.35fr auto 0.85fr;
+  align-items: start;
+  gap: 1.6rem;
+}
+
+.pud-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* Subtle stagger fade-in — visualizes the logical flow (pantry →
+   understanding → recipes) as the section enters view. Hooks onto the
+   existing .reveal/.visible mechanism (no new JS, no autoplay, no loop).
+   This is the only motion added here; everything else in the section
+   remains fully static once visible — calm technology, not a demo. */
+.pud-stagger {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+  transition-delay: var(--pud-delay, 0s);
+}
+
+.pud-flow.visible .pud-stagger {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pud-column-label {
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* The central column's label is a full sentence ("UMAVI builds context
+   around your cooking"), not a short tag like "Pantry" — it needs its own
+   typographic treatment, not the uppercase micro-label style. */
+.pud-column-core > .pud-column-label {
+  display: block;
+  font-size: 1.3rem;
+  letter-spacing: -0.02em;
+  text-transform: none;
+  color: var(--text);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.pud-column-caption {
+  margin: 0.15rem 0 0;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.pud-arrow {
+  align-self: center;
+  margin-top: 6rem;
+  font-size: 1.4rem;
+  color: var(--text-secondary);
+  opacity: 0.5;
+}
+
+/* Column 1 — Pantry */
+.pud-pantry-image {
+  position: relative;
+  border-radius: var(--radius-lg);
+  overflow: visible;
+}
+
+.pud-pantry-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: contain;
+}
+
+/* Recognition overlay — deliberately generic and quiet, not a CV detector
+   demo (no "feta 98%" style labels). The message is "a messy scene becomes
+   structured context," not "look how well it identifies ingredients." */
+.pud-recognition-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.pud-recognition-box {
+  position: absolute;
+  left: var(--rx);
+  top: var(--ry);
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1.2px solid rgba(166,255,77,0.7);
+  border-radius: 4px;
+  opacity: 0;
+  transform: scale(0.85);
+  animation: pudRecognitionIn 0.6s var(--ease) forwards, pudRecognitionJitter 4.5s ease-in-out 1.4s infinite;
+  animation-delay: 0.4s, 1.4s;
+}
+
+.pud-recognition-box:nth-child(2) { animation-delay: 0.65s, 1.65s; }
+.pud-recognition-box:nth-child(3) { animation-delay: 0.9s, 1.9s; }
+.pud-recognition-box:nth-child(4) { animation-delay: 1.15s, 2.15s; }
+.pud-recognition-box:nth-child(5) { animation-delay: 1.4s, 2.4s; }
+.pud-recognition-box:nth-child(6) { animation-delay: 1.65s, 2.65s; }
+.pud-recognition-box:nth-child(7) { animation-delay: 1.9s, 2.9s; }
+.pud-recognition-box:nth-child(8) { animation-delay: 2.15s, 3.15s; }
+.pud-recognition-box:nth-child(9) { animation-delay: 2.4s, 3.4s; }
+
+@keyframes pudRecognitionIn {
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Subtle continuous jitter after fade-in — "sensation of processing,"
+   never distracting: tiny scale breathing, low amplitude. */
+@keyframes pudRecognitionJitter {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.04); }
+}
+
+.pud-recognition-tag {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  color: rgba(166,255,77,0.85);
+  background: rgba(8,8,8,0.55);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+}
+
+.pud-recognition-caption {
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* Column 2 — UMAVI Core Moment. Calm visual representation of reducing a
+   large decision space to a few relevant choices — not an AI visualization,
+   not a circuit board, not a neural network. Apple-editorial motion design,
+   not a tech dashboard. */
+.pud-column-core {
+  padding-top: 0.2rem;
+}
+
+.pud-core-moat {
+  margin-top: 2.4rem;
+  padding: 0;
+  max-width: 34rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  opacity: 0;
+  filter: blur(8px);
+  transform: scale(0.98);
+  transition: opacity 0.8s var(--ease), filter 0.8s var(--ease), transform 0.8s var(--ease);
+}
+
+.pud-core-moat.engaged {
+  opacity: 1;
+  filter: blur(0);
+  transform: scale(1);
+}
+
+.pud-core-moat-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  opacity: 0.55;
+  margin-bottom: 0.3rem;
+}
+
+.pud-core-moat-statement {
+  font-size: 0.92rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.pud-core-moat-verdict {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+/* UMAVI Context Model — sits below the constellation stage, reads as the
+   result that produced it, not a competing metric. Context register
+   only: "refined across N sessions," never identity language. */
+.core-context-model {
+  margin-top: 1.4rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  opacity: 0;
+  transition: opacity 0.6s var(--ease);
+}
+
+.core-context-model.engaged {
+  opacity: 1;
+}
+
+.core-context-model-label {
+  display: block;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin-bottom: 0.15rem;
+}
+
+.core-context-model-rows {
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* Each row fades in independently (opacity + translateY + blur), staggered
+   via JS — "the model is assembling itself," not a single block fading
+   in as one unit. */
+.core-context-row {
+  display: grid;
+  grid-template-columns: 8.5rem 1fr 2.4rem;
+  align-items: center;
+  gap: 0.6rem;
+  opacity: 0;
+  transform: translateY(4px);
+  filter: blur(4px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out, filter 0.5s ease-out;
+}
+
+.core-context-row.in {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.core-context-row-label {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.core-context-row-bar {
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.07);
+  overflow: hidden;
+}
+
+/* No CSS transition on width — these bars grow continuously frame-by-
+   frame via requestAnimationFrame in script.js, not in steps. */
+.core-context-row-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(166,255,77,0.5), rgba(166,255,77,0.85));
+}
+
+/* Weeknight habits — subtly segmented into 2 internal visual phases, not
+   a uniform fill like the others. A faint marker line, not a hard break. */
+.core-context-row[data-metric="weeknight"] .core-context-row-bar {
+  position: relative;
+}
+
+.core-context-row[data-metric="weeknight"] .core-context-row-bar::after {
+  content: "";
+  position: absolute;
+  left: 42%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(0,0,0,0.25);
+  z-index: 1;
+}
+
+.core-context-row-value {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  transition: opacity 0.4s ease-out;
+}
+
+.core-context-row-value.revealed {
+  opacity: 1;
+}
+
+.core-context-model-subtitle {
+  display: block;
+  margin-top: 0.15rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  opacity: 0.75;
+  transition: opacity 0.3s ease-out;
+}
+
+.core-moment-stage {
+  position: relative;
+  height: 320px;
+  margin-top: 0.6rem;
+}
+
+/* Cognitive Field canvas — the physics simulation (drift + attraction +
+   damping) runs in script.js and draws particles directly via Canvas 2D.
+   No per-particle DOM elements, no CSS transitions driving motion — this
+   is real continuous physics, not interpolated keyframes. */
+.core-field-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Infinite Boundary Fade — the field should read as a window onto a
+     larger space, not a closed box. Soft fade at all 4 edges. */
+  mask-image:
+    linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, black 10%, black 90%, transparent 100%);
+  mask-composite: intersect;
+  -webkit-mask-image:
+    linear-gradient(90deg, transparent 0%, black 10%, black 90%, transparent 100%),
+    linear-gradient(180deg, transparent 0%, black 10%, black 90%, transparent 100%);
+  -webkit-mask-composite: source-in;
+}
+
+/* Context Frame — factors are individual bordered rectangles (UMAVI's
+   moat deserves real visual presence), positioned at the top of the
+   stage so they never overlap the constellations below. Still one
+   single fade-in animation on the container — no per-factor animation,
+   no connectors, no beams toward the clusters. */
+.core-context-frame {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  top: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.core-context-frame span {
+  font-size: 0.68rem;
+  letter-spacing: 0.01em;
+  color: rgba(166,255,77,0.55);
+  padding: 0.28rem 0.55rem;
+  border: 1px solid rgba(166,255,77,0.2);
+  border-radius: 999px;
+  opacity: 0;
+  filter: blur(1px);
+  transform: translateY(-4px);
+  transition: opacity 0.5s var(--ease), filter 0.5s var(--ease), transform 0.5s var(--ease);
+}
+
+.core-context-frame span.in {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+/* Mobile: no animation at all — show the final stabilized state directly */
+@media (max-width: 1100px) {
+  .core-moment-stage {
+    height: 160px;
+  }
+}
+
+/* Column 3 — Recipe suggestions */
+.pud-recipe-card {
+  padding: 0.95rem 1.1rem;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: background 0.8s var(--ease), border-color 0.8s var(--ease), box-shadow 0.8s var(--ease), transform 0.6s ease-out, opacity 0.6s ease-out;
+}
+
+.pud-recipe-card.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Global Field State Sync — fires on ALL 4 cards simultaneously the
+   moment the Cognitive Field settles, never on a single card. The system
+   says "a set of 4 solutions has emerged," never "this recipe won." */
+.pud-recipe-card.field-settled {
+  background: rgba(166,255,77,0.05);
+  border-color: rgba(166,255,77,0.22);
+  box-shadow: 0 0 28px rgba(166,255,77,0.06);
+  transform: scale(1.015);
+}
+
+.pud-recipe-card strong {
+  display: block;
+  font-size: 1rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.pud-recipe-meta {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 0.4rem;
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+}
+
+.pud-recipe-match {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* Identity line — the climax of the demo */
+.demo-identity-reveal {
+  padding: 1.2rem 1.4rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(166,255,77,0.07), rgba(107,92,255,0.07));
+  border: 1px solid rgba(166,255,77,0.14);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+
+.demo-identity-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.identity-line-inner strong,
+.identity-line-inner span {
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+
+.identity-line-inner span {
+  margin-top: 0.2rem;
+  color: var(--accent);
+}
+
+.identity-line-inner em { font-style: italic; }
+
+/* ─── CONSEQUENCE (new section · Scene 07 · EOR 85% · Family 4: Resolution) ─── */
+.consequence-heading {
+  max-width: 50rem;
+  margin-bottom: 2.5rem;
+}
+
+.consequence-heading h2 {
+  margin-top: 0.9rem;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+.consequence-heading p {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.consequence-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+}
+
+/* Consequence cards — each dish is independent proof, not a shared scene.
+   No collage, no compositing. Image + recipe name + meta, consistent with
+   the recipe cards already shown in "What it actually does" for mandatory
+   continuity (pantry → understanding → recipes → real dishes). */
+.consequence-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.consequence-card-image {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.consequence-card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.consequence-card strong {
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.consequence-card-meta {
+  display: flex;
+  gap: 0.9rem;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
+.consequence-card-match {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   SCENE 08 — REVEAL OVERRIDE ZONE
+   The only authorized exception to the immutable-landing rule. Scenes
+   01–07 and 09 keep the standard .section / max-width / grid treatment;
+   this block intentionally breaks out of it. Do not reuse this pattern
+   elsewhere — see the HTML comment above the markup for the full rule.
+   ═══════════════════════════════════════════════════════════════════ */
+
+.reveal-override {
+  position: relative;
+  width: 100vw;
+  min-height: 140vh;
+  margin-left: calc(50% - 50vw);
+  overflow: hidden;
+  display: block;
+}
+
+/* Layer 0 — the world, full viewport */
+.reveal-override-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Layer 1 — warm atmospheric gradient. Not a color filter sitting on top —
+   a soft directional vignette consistent with Hero's own overlay logic, so
+   the brain reads "same product, different state" rather than "different
+   treatment applied here." */
+.reveal-override-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 30% 70%, rgba(244,200,140,0.16), transparent 55%),
+    linear-gradient(180deg, rgba(10,8,4,0.05) 0%, rgba(10,8,4,0.1) 45%, rgba(10,8,4,0.55) 100%),
+    linear-gradient(100deg, rgba(10,8,4,0.4) 0%, rgba(10,8,4,0.05) 60%);
+}
+
+/* Layer 2 — floating typography. No panel, no glass-card, no column — text
+   sits directly on the world, the same way Hero's headline does. Positioned
+   right-of-frame because the person in Scene 08 sits left-of-frame; text
+   must never cover the human subject. */
+.reveal-override-content {
+  position: relative;
+  z-index: 3;
+  max-width: 600px;
+  padding-top: 18vh;
+  padding-left: 8vw;
+  padding-right: 6vw;
+}
+
+.reveal-override-content-right {
+  margin-left: auto;
+  padding-left: 6vw;
+  padding-right: 8vw;
+  text-align: right;
+}
+
+.reveal-override-content h2 {
+  margin-top: 1rem;
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+  color: var(--text);
+}
+
+.reveal-override-content p {
+  margin-top: 1.2rem;
+  max-width: 30rem;
+  line-height: 1.75;
+  color: rgba(255,255,255,0.82);
+  text-shadow: 0 1px 12px rgba(0,0,0,0.4);
+}
+
+.reveal-override-content-right p {
+  margin-left: auto;
+}
+
+/* ─── PROOF ─── */
+.proof-heading { max-width: 52rem; margin-bottom: 2.5rem; }
+
+.proof-heading h2 {
+  margin-top: 0.9rem;
+  font-size: clamp(2.2rem, 4.5vw, 3.6rem);
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+}
+
+.proof-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.quote-card {
+  padding: 1.6rem;
+  border-radius: var(--radius-lg);
+  min-height: 190px;
+  display: flex;
+  align-items: flex-end;
+  font-size: 1.28rem;
+  line-height: 1.38;
+  font-style: italic;
+  font-weight: 300;
+}
+
+/* ─── WAITLIST ─── */
+.waitlist-section {
+  position: relative;
+  isolation: isolate;
+}
+
+.scene-slot-waitlist {
+  position: absolute;
+  inset: 0;
+  margin: 0 -2rem;
+  border-radius: 0;
+  z-index: -1;
+  opacity: 0.4;
+}
+
+.waitlist-panel {
+  position: relative;
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 0.95fr 1.05fr;
+  align-items: start;
+  padding: 2rem;
+  border-radius: var(--radius-xl);
+}
+
+.waitlist-copy h2 {
+  margin-top: 0.9rem;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  line-height: 1.05;
+  letter-spacing: -0.055em;
+}
+
+.waitlist-copy p {
+  margin-top: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.75;
+}
+
+.waitlist-form { display: grid; gap: 1rem; }
+
+.waitlist-form label {
+  display: grid;
+  gap: 0.55rem;
+  color: var(--text-secondary);
+  font-size: 0.92rem;
+}
+
+.waitlist-form input, .waitlist-form select {
+  width: 100%;
+  min-height: 3.4rem;
+  padding: 0 1rem;
+  border-radius: var(--radius-md);
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.waitlist-form select option { background: #111; }
+
+.waitlist-form input:focus, .waitlist-form select:focus {
+  border-color: rgba(166,255,77,0.4);
+  box-shadow: 0 0 0 4px rgba(166,255,77,0.07);
+}
+
+.form-feedback {
+  min-height: 1.4rem;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+/* ─── FOOTER ─── */
+.site-footer {
+  width: min(calc(100% - 2rem), var(--max-width));
+  margin: 0 auto;
+  padding: 0 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.site-footer strong { color: var(--text); display: block; margin-bottom: 0.3rem; }
+.footer-logo { height: 22px; width: auto; display: block; margin-bottom: 0.5rem; opacity: 0.92; }
+.site-footer p { margin: 0; }
+.site-footer a:hover { color: var(--text); }
+
+/* ─── REVEAL ANIMATIONS ─── */
+.reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition: opacity var(--section-reveal-speed, 0.95s) var(--ease), transform var(--section-reveal-speed, 0.95s) var(--ease);
+}
+
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+.reveal.delay-1 { transition-delay: 0.12s; }
+.reveal.delay-2 { transition-delay: 0.24s; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1100px) {
+  .waitlist-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .mirror-sticky-panel { position: static; }
+
+  .hero-overlay {
+    background:
+      linear-gradient(180deg, rgba(5,5,5,0.18) 0%, rgba(5,5,5,0.72) 65%, rgba(5,5,5,0.94) 100%),
+      linear-gradient(105deg, rgba(5,5,5,0.4), rgba(5,5,5,0.08));
+  }
+
+  .hero-content { justify-content: flex-end; padding-bottom: 5rem; }
+
+  .proof-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .reveal-override-content { padding-left: 6vw; padding-right: 8vw; max-width: 80vw; }
+
+  .pud-flow { grid-template-columns: 1fr; }
+  .pud-arrow { display: none; }
+}
+
+@media (max-width: 800px) {
+  .site-header { padding: 0.8rem 1rem; border-radius: 26px; }
+  .header-actions { display: none; }
+  .section { padding: 6.5rem 0; }
+  .hero-content h1 { font-size: clamp(3.2rem, 14vw, 5rem); }
+  .proof-grid { grid-template-columns: 1fr; }
+  .consequence-grid-4 { grid-template-columns: 1fr; }
+  .site-footer { flex-direction: column; align-items: flex-start; }
+
+  .reveal-override { min-height: 120vh; }
+  .reveal-override-content { padding-top: 14vh; }
+}
+
+@media (max-width: 520px) {
+  .button, .hero-scroll-cta { width: 100%; }
+  .hero-content { padding-bottom: 3rem; }
+  .hero-content h1 { max-width: 11ch; }
+  .yah-line { font-size: clamp(1.75rem, 9.5vw, 2.4rem); }
+
+  .mirror-thumbs { gap: 0.5rem; }
+  .mirror-thumb-day { font-size: 0.64rem; }
+
+  .reveal-override { min-height: 110vh; }
+  .reveal-override-content { padding-top: 10vh; max-width: 90vw; }
+  .reveal-override-content h2 { font-size: clamp(2rem, 8vw, 2.8rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

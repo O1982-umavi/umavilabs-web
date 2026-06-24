@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UMAVI | Your evolving culinary companion</title>
+    <meta name="description" content="UMAVI is your evolving culinary companion, built to relieve daily cooking decision fatigue by understanding how you live and cook." />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <canvas class="page-noise" id="particle-canvas" aria-hidden="true"></canvas>
+
+    <!-- ═══ LIVING MEMORY CARD — single persistent signature system ═══
+         Replaces the Memory Orb entirely (no dual system — decorative
+         abstraction adds nothing the brain doesn't already get from a
+         sentence). One state line + one insight line, updated per section
+         by script.js, driven off the same data-load/data-meaning markers
+         already on each section. See note: "the brain understands
+         sentences, not decorative systems." -->
+    <div class="memory-card" id="memory-card" aria-hidden="true">
+      <span class="memory-card-state" id="memory-card-state">Learning…</span>
+      <span class="memory-card-insight" id="memory-card-insight">End of day = low energy</span>
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="UMAVI home">
+        <img class="brand-mark" src="./assets/images/umavi-symbol.png" alt="" />
+        <span>UMAVI</span>
+      </a>
+      <nav class="header-actions">
+        <a class="ghost-link" href="#mirror">Recognition</a>
+        <a class="ghost-link" href="#demo">Identity demo</a>
+        <a class="button button-small magnetic" href="#waitlist">Get access</a>
+      </nav>
+    </header>
+
+    <main id="top">
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT 1 — "It sees me"   ·   Hero → Pain → Mirror
+           Goal: recognition. Sound-design analogy: silence → light noise → rhythm
+           ═══════════════════════════════════════════════════════════ -->
+      <div class="act" data-act="1" id="act-1">
+
+        <!-- SCENE 01 — Hero · EOR 95% · Kitchen/Home 90/10 -->
+        <section class="hero-fullscreen" id="hero" data-load="0.95" data-eor="0.95" data-desire="0.3" data-scene="01" data-card-state="Learning…" data-card-insight="End of day = low energy">
+          <img
+            class="hero-image"
+            src="./assets/images/scene-01-hero.png"
+            alt="A person at night, lit by an open fridge, holding a phone, deciding what to cook."
+          />
+          <div class="hero-overlay" aria-hidden="true"></div>
+          <div class="hero-content">
+            <div class="hero-eyebrow reveal-hero">UMAVI</div>
+            <h1 class="reveal-hero delay-1">Cooking shouldn't feel like a decision every day.</h1>
+            <a class="hero-scroll-cta magnetic reveal-hero delay-2" href="#you-are-here">
+              <span>See yourself in it</span>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                <path d="M10 4v12M10 16l-4-4M10 16l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+
+            <!-- Early Access Entry Point — functional, low-commitment CTA.
+                 Deliberately minimal so it never competes with the Hero
+                 visual/headline. Distinct from Waitlist's high-intent,
+                 immersive final conversion moment (kept as-is, untouched). -->
+            <form class="hero-early-access reveal-hero delay-2" id="hero-early-access-form">
+              <input type="email" name="email" placeholder="you@example.com" required aria-label="Email" />
+              <select name="country" aria-label="Country">
+                <option value="">Country</option>
+                <option>Spain</option>
+                <option>France</option>
+                <option>Germany</option>
+                <option>Italy</option>
+                <option>United Kingdom</option>
+                <option>Other</option>
+              </select>
+              <button class="button button-primary" type="submit">Get early access</button>
+            </form>
+            <p class="hero-early-access-microcopy reveal-hero delay-2">Or scroll down to discover how UMAVI turns a pantry into dinner decisions.</p>
+          </div>
+          <div class="hero-scroll-indicator" aria-hidden="true">
+            <span></span>
+          </div>
+        </section>
+
+        <!-- YOU ARE HERE MOMENT — psychological precision, no scene slot (pure text bridge) -->
+        <section class="section you-are-here-section" id="you-are-here" data-load="0.88" data-desire="0.35">
+          <div class="yah-wrap">
+            <span class="section-kicker reveal">You are here</span>
+            <div class="yah-lines">
+              <p class="yah-line reveal">You don't lack recipes.</p>
+              <p class="yah-line reveal delay-1">You lack mental space at 7pm.</p>
+              <p class="yah-line yah-line-secondary reveal delay-2">You're not choosing food.<br>You're managing energy, time and expectation.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCENE 02 — Pain · EOR 50% · Kitchen/Home 90/10 -->
+        <section class="section pain-section" id="pain" data-load="0.9" data-eor="0.5" data-desire="0.4" data-scene="02" data-card-state="Recognising…" data-card-insight="Recipe tabs left open, again">
+          <div class="atmo-canvas atmo-family-ingredients" aria-hidden="true">
+            <div class="atmo-canvas-bg"></div>
+            <div class="atmo-canvas-slot atmo-canvas-slot-photo" data-future-asset="pain-ingredients">
+              <img class="atmo-canvas-img" src="./assets/images/scene-02-pain.png" alt="" />
+            </div>
+          </div>
+          <div class="pain-layout">
+            <div class="pain-copy reveal">
+              <span class="section-kicker">Fragmented life</span>
+              <h2>Same decision. Every single day.</h2>
+              <p>Half-used ingredients. Recipe tabs you never finish reading. A plan that quietly falls apart by 6pm.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCENE 03A–D — Mirror · EOR 75% · Kitchen/Home 80→65/20→35
+             STATE PERCEPTION model: the image is the carrier of meaning,
+             text is minimal metadata (day + mode + one short caption),
+             never a competing explanation panel. This intentionally
+             differs from the Core Context Model (which already explains
+             the system) — Mirror shows the felt state, it doesn't explain
+             it. -->
+        <section class="section mirror-section" id="mirror" data-load="0.7" data-eor="0.75" data-desire="0.7" data-scene="03" data-card-state="Memory added" data-card-insight="Mediterranean flavours">
+          <div class="mirror-header reveal">
+            <span class="section-kicker">Your cooking rhythm across the week</span>
+            <p class="mirror-subline">Same life. Different point in the week.</p>
+          </div>
+          <div class="mirror-layout mirror-layout-perception">
+            <div class="mirror-sticky-panel" id="mirror-sticky">
+              <div class="mirror-image-stage">
+                <div class="scene-slot scene-slot-mirror" data-scene-ref="03A">
+                  <img class="scene-slot-photo" id="mirror-photo" src="./assets/images/scene-03-mirror.png" alt="The same kitchen, at a different point in the week." />
+                  <div class="scene-slot-mood"></div>
+                </div>
+                <!-- Editorial caption overlay — day + mode + one short
+                     semantic line, never a UI panel. Same tick as the
+                     image swap, zero offset. -->
+                <div class="mirror-overlay">
+                  <span class="mirror-overlay-day" id="mirror-day">Monday</span>
+                  <h2 class="mirror-overlay-mode" id="mirror-mode">Exhausted mode</h2>
+                  <p class="mirror-overlay-caption" id="mirror-caption">Comfort and speed, almost no friction.</p>
+                </div>
+              </div>
+              <!-- Thumbnail strip — the 3 non-active states, always shown
+                   as real (small, lazy-loaded) images, not dots. Gives
+                   "I can see all 4 states exist" without paying the cost
+                   of 4 full-size hero images loaded at once. Hover = instant
+                   preview swap; click = lock that state (overrides scroll
+                   default until the next scroll-driven trigger fires). -->
+              <div class="mirror-thumbs" id="mirror-thumbs"></div>
+              <!-- Progress hint — explicit "I've seen the whole system"
+                   feedback. Tracks states reached via real scroll/click,
+                   not assumed; resolves "I can't perceive the system as
+                   complete" without restructuring into a simultaneous
+                   grid. -->
+              <p class="mirror-progress-hint" id="mirror-progress-hint">Week rhythm: 1/4 states experienced</p>
+            </div>
+            <!-- Scroll markers — invisible, replace the old visible text
+                 cards. Preserve the exact same scroll-driven
+                 IntersectionObserver trigger mechanism (no timers
+                 introduced) while carrying zero visible description
+                 content, per the state-perception transformation. The
+                 sticky panel pins against the section's height as these
+                 markers pass through the viewport. -->
+            <div class="mirror-scroll-track" aria-hidden="true">
+              <div class="mirror-scroll-marker active" data-state="0"></div>
+              <div class="mirror-scroll-marker" data-state="1"></div>
+              <div class="mirror-scroll-marker" data-state="2"></div>
+              <div class="mirror-scroll-marker" data-state="3"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT 2 — "It understands why"   ·   Predictable → Demo
+           Goal: credibility. Sound-design analogy: activity
+           ═══════════════════════════════════════════════════════════ -->
+      <div class="act" data-act="2" id="act-2">
+
+        <!-- SCENE 04 — Patterns, not chaos · EOR 65% · Kitchen/Home 70/30
+             Heroic statement section: this is UMAVI's core conceptual claim,
+             not a decorative explanation. The legacy split-layout (a
+             separate scene-04 framed image competing with the text) has
+             been removed — the atmo-canvas photo now lives only as minimal
+             background ambiance, never as a competing visual focus. Text
+             carries ~80% of the section's weight. -->
+        <section class="section predictable-section predictable-heroic" id="predictable" data-load="0.6" data-eor="0.65" data-desire="0.8" data-scene="04" data-card-state="Noting a habit" data-card-insight="More adventurous on weekends">
+          <div class="atmo-canvas atmo-family-repetition" aria-hidden="true">
+            <div class="atmo-canvas-bg"></div>
+            <div class="atmo-canvas-slot atmo-canvas-slot-photo" data-future-asset="predictable-repetition">
+              <img class="atmo-canvas-img" src="./assets/images/scene-04-predictable.png" alt="" />
+            </div>
+          </div>
+          <div class="predictable-wrap reveal">
+            <span class="section-kicker">Pattern, not chaos</span>
+            <h2 class="predictable-statement">UMAVI recognises how you actually cook.</h2>
+            <p class="predictable-substatement">Patterns in your habits, ingredients, and time across a real week — your cooking rhythm, not random suggestions.</p>
+            <ul class="predictable-microbullets">
+              <li>Not who you are. Just what consistently works for you.</li>
+              <li>Noticed over time, never assumed on day one.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- SCENE 06 — "What it actually does" · NON-immersive always (per
+             alternation rule). No background photo, no AI graphics, no
+             spheres, no timelines, no hidden states, no autoplay — the
+             previous animated 3-state cognition demo is replaced by a
+             static 3-column composition, everything visible at once:
+             PANTRY → UMAVI UNDERSTANDING → RECIPE SUGGESTIONS. -->
+        <section class="section demo-section" id="demo" data-load="0.4" data-meaning="0.7" data-eor="0.35" data-desire="0.75" data-scene="06" data-card-state="Narrowing it down" data-card-insight="From many options to one">
+          <div class="demo-heading reveal">
+            <span class="section-kicker">What it actually does</span>
+            <h2>From what's actually there tonight to what's for dinner.</h2>
+            <p>Not an explanation. The same three-step shift that happens every time you open UMAVI — pantry, understanding, decision — laid out so you can see it all at once.</p>
+          </div>
+
+          <div class="pud-flow reveal">
+            <!-- Column 1 — Pantry (≈30%). Factual framing only — "what's
+                 actually there," not a judgment about the person. -->
+            <div class="pud-column pud-column-pantry pud-stagger" style="--pud-delay: 0s;">
+              <div class="pud-pantry-image">
+                <img src="./assets/images/pantry.png" alt="Fresh ingredients on a wooden counter: chicken thighs, feta, cherry tomatoes, broccoli, Greek yoghurt, lemon, parsley, garlic, rice and olive oil." />
+                <!-- Recognition overlays — deliberately generic, not a CV
+                     ingredient-detector demo. The message is "a messy scene
+                     becomes structured context," not "UMAVI can identify
+                     ingredients." Approximate positions only. -->
+                <!-- Semantic scan layer — not real computer vision, a
+                     simulated UMAVI perception pass. Positions are
+                     plausible visual estimates over this specific image,
+                     not precise geometry. "Truth is semantic, not
+                     geometric": each label sits in the most likely region
+                     of that ingredient, intentionally placed, not
+                     algorithmically detected. -->
+                <div class="pud-recognition-overlay" aria-hidden="true">
+                  <span class="pud-recognition-box" style="--rx: 62%; --ry: 9%;"><span class="pud-recognition-tag">lemon</span></span>
+                  <span class="pud-recognition-box" style="--rx: 13%; --ry: 25%;"><span class="pud-recognition-tag">rice</span></span>
+                  <span class="pud-recognition-box" style="--rx: 46%; --ry: 30%;"><span class="pud-recognition-tag">tomato</span></span>
+                  <span class="pud-recognition-box" style="--rx: 83%; --ry: 28%;"><span class="pud-recognition-tag">broccoli</span></span>
+                  <span class="pud-recognition-box" style="--rx: 26%; --ry: 45%;"><span class="pud-recognition-tag">feta</span></span>
+                  <span class="pud-recognition-box" style="--rx: 73%; --ry: 54%;"><span class="pud-recognition-tag">chicken</span></span>
+                  <span class="pud-recognition-box" style="--rx: 16%; --ry: 8%;"><span class="pud-recognition-tag">yogurt</span></span>
+                  <span class="pud-recognition-box" style="--rx: 37%; --ry: 84%;"><span class="pud-recognition-tag">basil</span></span>
+                  <span class="pud-recognition-box" style="--rx: 78%; --ry: 87%;"><span class="pud-recognition-tag">black pepper</span></span>
+                </div>
+              </div>
+              <span class="pud-column-label">Pantry</span>
+              <p class="pud-column-caption pud-recognition-caption" id="pantry-scan-caption">UMAVI is scanning ingredients…</p>
+            </div>
+
+            <span class="pud-arrow" aria-hidden="true">→</span>
+
+            <!-- Column 2 — UMAVI Cognitive Field (≈44%). NOT a filtering
+                 list, not a circuit board, not a neural network. UMAVI is
+                 not selecting from a list — it is an emergent field where
+                 ~400 latent-preference particles, driven by continuous
+                 forces (soft drift + attraction + damping), settle into 4
+                 stable attractors — the 4 real recipes shown in the right
+                 column, not abstract clusters. Canvas 2D, no React/Three.js
+                 (kept consistent with the rest of this vanilla CSS+JS
+                 landing). Runs ONCE on viewport entry: chaos →
+                 convergence → attractor lock → permanent freeze. This is a
+                 decision moment, not an ambient generative toy — no
+                 infinite loop, no cross-column connecting lines (each
+                 column stays its own independent mental mode). Desktop
+                 only; mobile shows the 4 settled attractors directly. -->
+            <div class="pud-column pud-column-core pud-stagger" style="--pud-delay: 0.18s;" id="umavi-core-moment">
+              <span class="pud-column-label">How your cooking context emerges</span>
+              <p class="pud-column-caption">From thousands of compatible possibilities to the four that make the most sense tonight.</p>
+
+              <div class="core-moment-stage" id="core-moment-stage">
+                <canvas class="core-field-canvas" id="core-field-canvas" aria-hidden="true"></canvas>
+                <div class="core-context-frame" id="core-context-frame" aria-hidden="true">
+                  <!-- Single semantic context line, populated by script.js -->
+                </div>
+              </div>
+
+              <!-- UMAVI Context Model — introduces the temporal dimension
+                   ("this gets better with use") without entering identity
+                   territory. Context register only: refined across N
+                   sessions, a contextual-understanding percentage — never
+                   "Culinary Twin," never "knows you," never a confidence
+                   score about the person. Reads as the result the
+                   constellations above are built from, not a separate
+                   metric competing with them. -->
+              <div class="core-context-model" id="core-context-model">
+                <span class="core-context-model-label">UMAVI Context Model</span>
+                <span class="core-context-model-subtitle" id="core-context-model-subtitle">Refining contextual understanding…</span>
+                <div class="core-context-model-rows" id="core-context-model-rows">
+                  <div class="core-context-row" data-metric="flavor">
+                    <span class="core-context-row-label">Flavor preferences</span>
+                    <div class="core-context-row-bar"><div class="core-context-row-fill" id="fill-flavor"></div></div>
+                    <span class="core-context-row-value" id="value-flavor"></span>
+                  </div>
+                  <div class="core-context-row" data-metric="routine">
+                    <span class="core-context-row-label">Cooking routines</span>
+                    <div class="core-context-row-bar"><div class="core-context-row-fill" id="fill-routine"></div></div>
+                    <span class="core-context-row-value" id="value-routine"></span>
+                  </div>
+                  <div class="core-context-row" data-metric="novelty">
+                    <span class="core-context-row-label">Exploration balance</span>
+                    <div class="core-context-row-bar"><div class="core-context-row-fill" id="fill-novelty"></div></div>
+                    <span class="core-context-row-value" id="value-novelty"></span>
+                  </div>
+                  <div class="core-context-row" data-metric="weeknight">
+                    <span class="core-context-row-label">Weeknight habits</span>
+                    <div class="core-context-row-bar"><div class="core-context-row-fill" id="fill-weeknight"></div></div>
+                    <span class="core-context-row-value" id="value-weeknight"></span>
+                  </div>
+                  <div class="core-context-row" data-metric="decision">
+                    <span class="core-context-row-label">Decision patterns</span>
+                    <div class="core-context-row-bar"><div class="core-context-row-fill" id="fill-decision"></div></div>
+                    <span class="core-context-row-value" id="value-decision"></span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pud-core-moat" id="pud-core-moat">
+                <span class="pud-core-moat-label">UMAVI Understanding</span>
+                <span class="pud-core-moat-statement">UMAVI isn't learning recipes.</span>
+                <span class="pud-core-moat-verdict">It's learning what consistently works for your week.</span>
+              </div>
+            </div>
+
+            <span class="pud-arrow" aria-hidden="true">→</span>
+
+            <!-- Column 3 — Recipe suggestions (≈40%), already adapted to the
+                 pantry and context shown in column 1. Neutral, factual
+                 framing — "best matches," never "survivors" or anything
+                 implying excluded/rejected options. -->
+            <div class="pud-column pud-column-recipes pud-stagger" style="--pud-delay: 0.36s;">
+              <span class="pud-column-label">Recipe suggestions</span>
+              <p class="pud-column-caption">The 4 best matches for tonight</p>
+              <div class="pud-recipe-card">
+                <strong>Lemon feta chicken tray bake</strong>
+                <div class="pud-recipe-meta"><span>24 min</span><span class="pud-recipe-match">92% match</span></div>
+              </div>
+              <div class="pud-recipe-card">
+                <strong>Warm broccoli rice bowl</strong>
+                <div class="pud-recipe-meta"><span>22 min</span><span class="pud-recipe-match">89% match</span></div>
+              </div>
+              <div class="pud-recipe-card">
+                <strong>Green feta cherry salad</strong>
+                <div class="pud-recipe-meta"><span>14 min</span><span class="pud-recipe-match">86% match</span></div>
+              </div>
+              <div class="pud-recipe-card">
+                <strong>Creamy yoghurt lemon chicken wraps</strong>
+                <div class="pud-recipe-meta"><span>18 min</span><span class="pud-recipe-match">84% match</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-identity-reveal visible" id="demo-identity-line">
+            <div class="identity-line-inner">
+              <strong>UMAVI isn't learning recipes.</strong>
+              <span>It's learning what <em>actually</em> works for your week.</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ═══════════════════════════════════════════════════════════
+           ACT 3 — "I want this"   ·   Consequence → Reveal → Waitlist
+           Goal: desire. Sound-design analogy: calm → peace
+           ═══════════════════════════════════════════════════════════ -->
+      <div class="act" data-act="3" id="act-3">
+
+        <!-- SCENE 07 — Consequence · NON-immersive always. Proof of outputs,
+             not storytelling. Mandatory continuity with "What it actually
+             does": these are the exact same 4 recipes, now shown as real,
+             independent dishes — no collage, no compositing, no merged
+             images. Desktop: 2x2 grid. Mobile: vertical stack. -->
+        <section class="section consequence-section" id="consequence" data-load="0.2" data-meaning="0.85" data-eor="0.85" data-desire="0.95" data-scene="07" data-card-state="Result visible" data-card-insight="Same ingredients, real dinners">
+          <div class="consequence-heading reveal">
+            <span class="section-kicker">The consequence</span>
+            <h2>These are tonight's best options.</h2>
+            <p>Not aspirational plating. Not a restaurant. Just what becomes possible once decision fatigue is gone.</p>
+          </div>
+          <div class="consequence-grid consequence-grid-4">
+            <div class="consequence-card">
+              <div class="consequence-card-image">
+                <img src="./assets/images/recipe-feta-chicken.png" alt="Lemon feta chicken tray bake with roasted cherry tomatoes." />
+              </div>
+              <strong>Lemon feta chicken tray bake</strong>
+              <div class="consequence-card-meta"><span>24 min</span><span class="consequence-card-match">92% match</span></div>
+            </div>
+            <div class="consequence-card">
+              <div class="consequence-card-image">
+                <img src="./assets/images/recipe-broccoli-rice.png" alt="Warm broccoli rice bowl with a soft-boiled egg." />
+              </div>
+              <strong>Warm broccoli rice bowl</strong>
+              <div class="consequence-card-meta"><span>22 min</span><span class="consequence-card-match">89% match</span></div>
+            </div>
+            <div class="consequence-card">
+              <div class="consequence-card-image">
+                <img src="./assets/images/recipe-feta-salad.png" alt="Green feta cherry tomato salad with cucumber." />
+              </div>
+              <strong>Green feta cherry salad</strong>
+              <div class="consequence-card-meta"><span>14 min</span><span class="consequence-card-match">86% match</span></div>
+            </div>
+            <div class="consequence-card">
+              <div class="consequence-card-image">
+                <img src="./assets/images/recipe-yoghurt-wraps.png" alt="Creamy yoghurt lemon chicken wraps." />
+              </div>
+              <strong>Creamy yoghurt lemon chicken wraps</strong>
+              <div class="consequence-card-meta"><span>18 min</span><span class="consequence-card-match">84% match</span></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             SCENE 08 — REVEAL · OVERRIDE ZONE (the only authorized exception
+             to the immutable-landing rule — see note below). Everything
+             else in this file (Scenes 01–07, 09) remains immutable.
+
+             IMMERSION HIERARCHY:
+               HERO    = establish world
+               03A     = deepen world
+               REVEAL  = override the landing itself
+
+             "If REVEAL can still be described as a website section, the
+             override is insufficient. REVEAL should temporarily feel closer
+             to a movie scene than to a webpage section."
+
+             🔒 CLOSED ARCHITECTURAL DECISION — REVEAL = zero explicit product
+             representation. The phone that previously lived here (HTML, CSS,
+             animation, responsive rules) has been removed entirely, not just
+             hidden — a dormant phone in the codebase becomes technical debt
+             and a standing temptation to re-add it "since it's already
+             there." REVEAL shows only the life the product unlocks, never
+             the product itself. Do not reintroduce a product visual in this
+             section without first revisiting this decision explicitly.
+
+             Layer composition (background → foreground):
+               Layer 0 — REVEAL image, full viewport
+               Layer 1 — warm atmospheric gradient
+               Layer 2 — floating typography (no panel, no glass-card, no
+                         column), positioned right-of-frame because the
+                         person in the photograph sits left-of-frame —
+                         text must never cover the human subject; the
+                         scene's feeling is the focus, not the words
+                         describing it. -->
+        <section class="reveal-override" id="reveal" data-load="0.15" data-meaning="1.0" data-eor="1.0" data-desire="1.0" data-scene="08" data-card-state="Tonight, sorted" data-card-insight="One less thing to figure out">
+
+          <!-- Layer 0 — the world, full viewport -->
+          <img class="reveal-override-image" src="./assets/images/scene-08-reveal.png" alt="The same life, later: warm light, dinner already decided, someone cooking calmly." />
+
+          <!-- Layer 1 — warm atmospheric gradient (replaces the old scene-slot mood/vignette treatment for this one full-viewport context) -->
+          <div class="reveal-override-atmosphere" aria-hidden="true"></div>
+
+          <!-- Layer 2 — floating typography, no panel, no column, no glass.
+               Positioned right-of-frame: the person in Scene 08 sits on the
+               left side of the photograph, so text on the right keeps the
+               human subject fully visible and keeps the feeling, not the
+               words, at the center of attention. -->
+          <div class="reveal-override-content reveal-override-content-right reveal">
+            <span class="section-kicker">Tonight is simpler</span>
+            <h2>Weeknight dinners, with a lot less back-and-forth.</h2>
+            <p>Not a feed of recipes. By the time you open it, there's already enough context to skip most of the back-and-forth — built around what's already in your kitchen, not a guess about who you are.</p>
+          </div>
+        </section>
+
+        <!-- Social proof -->
+        <section class="section proof-section" data-load="0.3" data-meaning="0.6" data-desire="0.95">
+          <div class="proof-heading reveal">
+            <span class="section-kicker">What people notice</span>
+            <h2>This is the moment dinner stops feeling like a decision.</h2>
+          </div>
+          <div class="proof-grid">
+            <blockquote class="quote-card glass-card reveal">"It feels like Spotify Discover for cooking."</blockquote>
+            <blockquote class="quote-card glass-card reveal">"It actually fits how my week works."</blockquote>
+            <blockquote class="quote-card glass-card reveal">"I stopped overthinking dinner."</blockquote>
+            <blockquote class="quote-card glass-card reveal">"This is the first app that actually remembers how I live."</blockquote>
+          </div>
+        </section>
+
+        <!--
+          OBJECT ANCHOR READINESS FLAG (annotation only — no code behaviour yet)
+          OBJECT_ANCHOR_READY = false
+          Superseded in part by the LIFE-ANCHOR approach (see UMAVI Visual
+          Storyboard v1 §0): we no longer require matching faces across scenes,
+          only matching environment constants (kitchen, light, wardrobe, phone).
+          Each new image asset must still be tagged anchor-compatible: true/false
+          before being wired into the Visual Identity Progression Layer. Do not
+          mix anchor-compatible and non-compatible photography in the same
+          continuity chain (Scene 01 → 03A–D → 04 → 06 → 08).
+        -->
+
+        <!-- SCENE 09 — Waitlist · EOR 40% · Kitchen/Home 20/80 -->
+        <section class="section waitlist-section" id="waitlist" data-load="0.05" data-meaning="0.8" data-eor="0.4" data-desire="0.95" data-scene="09" data-card-state="Memory complete" data-card-insight="Ready when you are">
+          <div class="atmo-canvas atmo-family-connection" aria-hidden="true">
+            <div class="atmo-canvas-bg"></div>
+            <div class="atmo-canvas-slot atmo-canvas-slot-photo" data-future-asset="waitlist-connection">
+              <img class="atmo-canvas-img" src="./assets/images/scene-09-waitlist.png" alt="" />
+            </div>
+          </div>
+          <div class="scene-slot scene-slot-waitlist" data-scene-ref="09" aria-hidden="true">
+            <div class="scene-slot-mood"></div>
+          </div>
+          <div class="waitlist-panel glass-card reveal">
+            <div class="waitlist-copy">
+              <span class="section-kicker">Access</span>
+              <h2>Be one of the first to try it.</h2>
+              <p>Join the first wave of people who want dinner to feel lighter, easier to plan and less mentally expensive.</p>
+            </div>
+            <form class="waitlist-form" id="waitlist-form">
+              <label>
+                Email
+                <input type="email" name="email" placeholder="you@example.com" required />
+              </label>
+              <label>
+                Country
+                <input type="text" name="country" placeholder="Spain" />
+              </label>
+              <label>
+                How many dinners per week do you cook?
+                <select name="dinners">
+                  <option value="">Select an option</option>
+                  <option>1-2</option>
+                  <option>3-4</option>
+                  <option>5-6</option>
+                  <option>7+</option>
+                </select>
+              </label>
+              <button class="button button-primary magnetic" type="submit">
+                Get early access
+              </button>
+              <p class="form-feedback" id="form-feedback" aria-live="polite">
+                Early access is for people who want less decision fatigue, not more cooking noise.
+              </p>
+            </form>
+            <span class="scene-slot-label scene-slot-label-standalone">Scene 09 · table set for two, lived-in calm · warm even light</span>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <img class="footer-logo" src="./assets/images/umavi-logo-full.png" alt="UMAVI" />
+        <p>Building a more personal future for everyday cooking.</p>
+      </div>
+      <a href="#top">Back to top</a>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
