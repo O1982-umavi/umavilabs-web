@@ -1050,18 +1050,64 @@ if (coreMomentColumn) {
   coreObs.observe(coreMomentColumn);
 }
 
+// ─── Supabase waitlist integration ───
+const SUPABASE_URL = "https://imunnmbwnlkqhlysfvse.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_d5nB1hYIwxL_yfLMaHjoLQ_lRUfi5fU";
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
+}
+
+async function subscribe(email, country, cta_location) {
+  const trimmed = String(email || "").trim();
+  if (!isValidEmail(trimmed)) {
+    return { ok: false, reason: "invalid_email" };
+  }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        "Content-Type": "application/json",
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify({
+        email: trimmed,
+        country: String(country || "").trim(),
+        source: "landing",
+        cta_location: cta_location,
+      }),
+    });
+    if (!res.ok) {
+      return { ok: false, reason: "supabase_error" };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, reason: "network_error" };
+  }
+}
+
 // ─── Hero Early Access form ───
 const heroEarlyAccessForm = document.getElementById("hero-early-access-form");
 
 if (heroEarlyAccessForm) {
-  heroEarlyAccessForm.addEventListener("submit", (e) => {
+  heroEarlyAccessForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const email = new FormData(heroEarlyAccessForm).get("email");
+    const formData = new FormData(heroEarlyAccessForm);
+    const email = formData.get("email");
+    const country = formData.get("country");
     const microcopy = heroEarlyAccessForm.nextElementSibling;
-    if (microcopy) {
-      microcopy.textContent = `${email} is on the list. See you further down the page.`;
+    const result = await subscribe(email, country, "hero");
+    if (!microcopy) return;
+    if (result.ok) {
+      microcopy.textContent = "✓ You're on the waitlist.";
+      heroEarlyAccessForm.reset();
+    } else if (result.reason === "invalid_email") {
+      microcopy.textContent = "Please enter a valid email address.";
+    } else {
+      microcopy.textContent = "Something went wrong. Please try again.";
     }
-    heroEarlyAccessForm.reset();
   });
 }
 
@@ -1070,12 +1116,22 @@ const waitlistForm = document.getElementById("waitlist-form");
 const formFeedback = document.getElementById("form-feedback");
 
 if (waitlistForm && formFeedback) {
-  waitlistForm.addEventListener("submit", (e) => {
+  waitlistForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const data = new FormData(waitlistForm);
     const email = data.get("email");
-    formFeedback.textContent = `${email} is on the list. We'll start with people who want dinner to feel lighter, calmer and more personal.`;
-    formFeedback.style.color = "var(--accent)";
-    waitlistForm.reset();
+    const country = data.get("country");
+    const result = await subscribe(email, country, "footer");
+    if (result.ok) {
+      formFeedback.textContent = "✓ You're on the waitlist.";
+      formFeedback.style.color = "var(--accent)";
+      waitlistForm.reset();
+    } else if (result.reason === "invalid_email") {
+      formFeedback.textContent = "Please enter a valid email address.";
+      formFeedback.style.color = "var(--text-secondary)";
+    } else {
+      formFeedback.textContent = "Something went wrong. Please try again.";
+      formFeedback.style.color = "var(--text-secondary)";
+    }
   });
 }
