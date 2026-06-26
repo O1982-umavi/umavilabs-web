@@ -1051,8 +1051,7 @@ if (coreMomentColumn) {
 }
 
 // ─── Supabase waitlist integration ───
-const SUPABASE_URL = "https://imunnmbwnlkqhlysfvse.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_d5nB1hYIwxL_yfLMaHjoLQ_lRUfi5fU";
+const WELCOME_EMAIL_ENDPOINT = "https://imunnmbwnlkqhlysfvse.supabase.co/functions/v1/send-welcome-email";
 
 function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email || "").trim());
@@ -1064,26 +1063,32 @@ async function subscribe(email, country, cta_location) {
     return { ok: false, reason: "invalid_email" };
   }
   try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist`, {
+    const res = await fetch(WELCOME_EMAIL_ENDPOINT, {
       method: "POST",
       headers: {
-        apikey: SUPABASE_ANON_KEY,
-        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
         "Content-Type": "application/json",
-        Prefer: "return=minimal",
       },
       body: JSON.stringify({
         email: trimmed,
         country: String(country || "").trim(),
-        source: "landing",
         cta_location: cta_location,
       }),
     });
+    const data = await res.json().catch(() => ({}));
     if (!res.ok) {
+      console.error("subscribe() error:", data);
       return { ok: false, reason: "supabase_error" };
     }
-    return { ok: true };
+    if (data && data.message === "Already subscribed") {
+      return { ok: true, duplicate: true };
+    }
+    if (data && data.success) {
+      return { ok: true, duplicate: false };
+    }
+    return { ok: true, duplicate: false };
   } catch (err) {
+    console.error("subscribe() network error:", err);
+    alert("Something went wrong. Please try again.");
     return { ok: false, reason: "network_error" };
   }
 }
