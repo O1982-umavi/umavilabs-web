@@ -10,6 +10,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300;1,400&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
+    <script>
+      !function(t,e){var o,n,p,r;e.__SV||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init capture register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey getNextSurveyStep identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty createPersonProfile opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing debug".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+      posthog.init('phc_nEVTjrpHtyGYDAE4DtFPozSy75qiFrSFEcLbx66D9j7y', { api_host: 'https://app.posthog.com' });
+    </script>
   </head>
   <body>
     <canvas class="page-noise" id="particle-canvas" aria-hidden="true"></canvas>
@@ -68,19 +72,25 @@
                  Deliberately minimal so it never competes with the Hero
                  visual/headline. Distinct from Waitlist's high-intent,
                  immersive final conversion moment (kept as-is, untouched). -->
-            <form class="hero-early-access reveal-hero delay-2" id="hero-early-access-form">
-              <input type="email" name="email" placeholder="you@example.com" required aria-label="Email" />
-              <select name="country" aria-label="Country">
-                <option value="">Country</option>
-                <option>Spain</option>
-                <option>France</option>
-                <option>Germany</option>
-                <option>Italy</option>
-                <option>United Kingdom</option>
-                <option>Other</option>
-              </select>
-              <button class="button button-primary" type="submit">Get early access</button>
-            </form>
+            <div id="hero-early-access-wrap">
+              <form class="hero-early-access reveal-hero delay-2" id="hero-early-access-form">
+                <input type="email" name="email" placeholder="you@example.com" required aria-label="Email" />
+                <select name="country" aria-label="Country">
+                  <option value="">Country</option>
+                  <option>France</option>
+                  <option>Spain</option>
+                  <option>United Kingdom</option>
+                  <option>Germany</option>
+                  <option>Italy</option>
+                  <option>Portugal</option>
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>Other</option>
+                </select>
+                <button class="button button-primary" type="submit">Get early access</button>
+              </form>
+              <p class="hero-early-access-microcopy" id="hero-early-access-microcopy">Or scroll down to discover how UMAVI turns a pantry into dinner decisions.</p>
+            </div>
             <p class="hero-early-access-microcopy reveal-hero delay-2">Or scroll down to discover how UMAVI turns a pantry into dinner decisions.</p>
           </div>
           <div class="hero-scroll-indicator" aria-hidden="true">
@@ -355,12 +365,6 @@
             </div>
           </div>
 
-          <div class="demo-identity-reveal visible" id="demo-identity-line">
-            <div class="identity-line-inner">
-              <strong>UMAVI isn't learning recipes.</strong>
-              <span>It's learning what <em>actually</em> works for your week.</span>
-            </div>
-          </div>
         </section>
       </div>
 
@@ -508,32 +512,35 @@
               <h2>Be one of the first to try it.</h2>
               <p>Join the first wave of people who want dinner to feel lighter, easier to plan and less mentally expensive.</p>
             </div>
-            <form class="waitlist-form" id="waitlist-form">
-              <label>
-                Email
-                <input type="email" name="email" placeholder="you@example.com" required />
-              </label>
-              <label>
-                Country
-                <input type="text" name="country" placeholder="Spain" />
-              </label>
-              <label>
-                How many dinners per week do you cook?
-                <select name="dinners">
-                  <option value="">Select an option</option>
-                  <option>1-2</option>
-                  <option>3-4</option>
-                  <option>5-6</option>
-                  <option>7+</option>
-                </select>
-              </label>
-              <button class="button button-primary magnetic" type="submit">
-                Get early access
-              </button>
+            <div id="waitlist-form-wrap">
+              <form class="waitlist-form" id="waitlist-form">
+                <label>
+                  Email
+                  <input type="email" name="email" placeholder="you@example.com" required />
+                </label>
+                <label>
+                  Country
+                  <select name="country">
+                    <option value="">Country</option>
+                    <option>France</option>
+                    <option>Spain</option>
+                    <option>United Kingdom</option>
+                    <option>Germany</option>
+                    <option>Italy</option>
+                    <option>Portugal</option>
+                    <option>United States</option>
+                    <option>Canada</option>
+                    <option>Other</option>
+                  </select>
+                </label>
+                <button class="button button-primary magnetic" type="submit">
+                  Get early access
+                </button>
+              </form>
               <p class="form-feedback" id="form-feedback" aria-live="polite">
                 Early access is for people who want less decision fatigue, not more cooking noise.
               </p>
-            </form>
+            </div>
             <span class="scene-slot-label scene-slot-label-standalone">Scene 09 · table set for two, lived-in calm · warm even light</span>
           </div>
         </section>

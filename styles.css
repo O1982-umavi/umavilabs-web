@@ -1517,35 +1517,6 @@ main, .site-header, .site-footer { position: relative; z-index: 1; }
 }
 
 /* Identity line — the climax of the demo */
-.demo-identity-reveal {
-  padding: 1.2rem 1.4rem;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(166,255,77,0.07), rgba(107,92,255,0.07));
-  border: 1px solid rgba(166,255,77,0.14);
-  opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
-}
-
-.demo-identity-reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.identity-line-inner strong,
-.identity-line-inner span {
-  display: block;
-  font-size: 1.05rem;
-  line-height: 1.45;
-}
-
-.identity-line-inner span {
-  margin-top: 0.2rem;
-  color: var(--accent);
-}
-
-.identity-line-inner em { font-style: italic; }
-
 /* ─── CONSEQUENCE (new section · Scene 07 · EOR 85% · Family 4: Resolution) ─── */
 .consequence-heading {
   max-width: 50rem;
@@ -1789,9 +1760,45 @@ main, .site-header, .site-footer { position: relative; z-index: 1; }
 
 .form-feedback {
   min-height: 1.4rem;
+  margin-top: 1rem;
   color: var(--text-secondary);
   font-size: 0.88rem;
   line-height: 1.6;
+}
+
+/* Waitlist success/loading/error states — minimal, premium, no layout
+   shift. Same typography system, no new colors outside the existing
+   palette (var(--text), var(--accent), var(--text-secondary)). */
+.cta-success-state {
+  text-align: center;
+  opacity: 0;
+  animation: ctaSuccessFadeIn 0.5s ease-out forwards;
+}
+
+.cta-success-state strong {
+  display: block;
+  color: var(--text);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.cta-success-state span {
+  display: block;
+  margin-top: 0.4rem;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+@keyframes ctaSuccessFadeIn {
+  to { opacity: 1; }
+}
+
+.cta-error-state {
+  margin-top: 0.8rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  opacity: 0;
+  animation: ctaSuccessFadeIn 0.4s ease-out forwards;
 }
 
 /* ─── FOOTER ─── */

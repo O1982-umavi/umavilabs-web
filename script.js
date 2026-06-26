@@ -1,3 +1,13 @@
+// ─── PostHog: UTM attribution capture (runs once on load) ───
+if (typeof posthog !== "undefined") {
+  const params = new URLSearchParams(window.location.search);
+  posthog.register({
+    source: params.get("utm_source") || "direct",
+    campaign: params.get("utm_campaign") || "none",
+    content: params.get("utm_content") || "none",
+  });
+}
+
 // ─── Scroll-triggered reveals ───
 const revealEls = document.querySelectorAll(".reveal");
 const revealObserver = new IntersectionObserver(
@@ -1102,16 +1112,43 @@ if (heroEarlyAccessForm) {
     const formData = new FormData(heroEarlyAccessForm);
     const email = formData.get("email");
     const country = formData.get("country");
-    const microcopy = heroEarlyAccessForm.nextElementSibling;
+    const submitBtn = heroEarlyAccessForm.querySelector("button[type='submit']");
+    const microcopy = document.getElementById("hero-early-access-microcopy");
+    const wrap = document.getElementById("hero-early-access-wrap");
+
+    const originalBtnText = submitBtn ? submitBtn.textContent : "";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Joining...";
+    }
+
+    if (typeof posthog !== "undefined") posthog.capture("cta_click", { location: "hero" });
+
     const result = await subscribe(email, country, "hero");
-    if (!microcopy) return;
+
     if (result.ok) {
-      microcopy.textContent = "✓ You're on the waitlist.";
-      heroEarlyAccessForm.reset();
-    } else if (result.reason === "invalid_email") {
-      microcopy.textContent = "Please enter a valid email address.";
-    } else {
-      microcopy.textContent = "Something went wrong. Please try again.";
+      if (typeof posthog !== "undefined") {
+        posthog.capture("signup_success", { location: "hero", country: country || "" });
+      }
+      if (wrap) {
+        wrap.innerHTML = result.duplicate
+          ? `<div class="cta-success-state"><strong>You're already on the list.</strong><span>We'll be in touch soon.</span></div>`
+          : `<div class="cta-success-state"><strong>You're on the list. We've sent you a confirmation email.</strong><span>Check your inbox for confirmation.</span></div>`;
+      }
+      return;
+    }
+
+    if (typeof posthog !== "undefined") posthog.capture("signup_error", { location: "hero" });
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
+    if (microcopy) {
+      microcopy.textContent =
+        result.reason === "invalid_email"
+          ? "Please enter a valid email address."
+          : "Something went wrong. Please try again.";
     }
   });
 }
@@ -1126,17 +1163,40 @@ if (waitlistForm && formFeedback) {
     const data = new FormData(waitlistForm);
     const email = data.get("email");
     const country = data.get("country");
-    const result = await subscribe(email, country, "footer");
-    if (result.ok) {
-      formFeedback.textContent = "✓ You're on the waitlist.";
-      formFeedback.style.color = "var(--accent)";
-      waitlistForm.reset();
-    } else if (result.reason === "invalid_email") {
-      formFeedback.textContent = "Please enter a valid email address.";
-      formFeedback.style.color = "var(--text-secondary)";
-    } else {
-      formFeedback.textContent = "Something went wrong. Please try again.";
-      formFeedback.style.color = "var(--text-secondary)";
+    const submitBtn = waitlistForm.querySelector("button[type='submit']");
+    const wrap = document.getElementById("waitlist-form-wrap");
+
+    const originalBtnText = submitBtn ? submitBtn.textContent : "";
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Joining...";
     }
+
+    if (typeof posthog !== "undefined") posthog.capture("cta_click", { location: "footer" });
+
+    const result = await subscribe(email, country, "footer");
+
+    if (result.ok) {
+      if (typeof posthog !== "undefined") {
+        posthog.capture("signup_success", { location: "footer", country: country || "" });
+      }
+      if (wrap) {
+        wrap.innerHTML = result.duplicate
+          ? `<div class="cta-success-state"><strong>You're already on the list.</strong><span>We'll be in touch soon.</span></div>`
+          : `<div class="cta-success-state"><strong>You're on the list. We've sent you a confirmation email.</strong><span>Check your inbox for confirmation.</span></div>`;
+      }
+      return;
+    }
+
+    if (typeof posthog !== "undefined") posthog.capture("signup_error", { location: "footer" });
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
+    }
+    formFeedback.innerHTML =
+      result.reason === "invalid_email"
+        ? `<span class="cta-error-state">Please enter a valid email address.</span>`
+        : `<span class="cta-error-state">Something went wrong. Please try again.</span>`;
   });
 }
